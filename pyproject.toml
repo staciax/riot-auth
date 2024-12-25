@@ -1,0 +1,87 @@
+[project]
+name = "riot-auth"
+description = "Add your description here"
+version = "0.1.0"
+readme = "README.md"
+authors = [{ name = "STACiA", email = "stacia.dev@gmail.com" }]
+classifiers = [
+    "Intended Audience :: Developers",
+    # "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python",
+    "Development Status :: 4 - Beta",
+    "Typing :: Typed",
+    "Framework :: AsyncIO",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP",
+]
+requires-python = ">=3.11"
+dependencies = ["aiohttp>=3.11.11"]
+# dynamic = ["version"]
+
+[dependency-groups]
+dev = ["mypy>=1.14.0,<1.15.0", "ruff>=0.8.4,<0.9.0"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+exclude = [".venv"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+exclude = [".git", ".ruff_cache", '.mypy_cache', ".venv", ".vscode"]
+
+[tool.ruff.format]
+preview = true
+quote-style = "single"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+
+    "ASYNC", # flake8-async
+    "S",     # flake8-bandit
+    "BLE",   # flake8-blind-except
+    "A",     # flake8-builtins
+    "FA",    # flake8-future-annotations
+    "PIE",   # flake8-pie
+    "Q",     # flake8-quotes
+    "RSE",   # flake8-raise
+    "RET",   # flake8-return
+    "TC",    # flake8-type-checking
+    "ARG",   # flake8-unused-arguments
+
+    "PGH",  # pygrep-hooks
+    "TRY",  # tryceratops
+
+    "RUF", # ruff-specific rules
+]
+ignore = [
+    "E501",   # line-too-long, handled by black
+    "TRY003", # raise-vanilla-args
+    "S101",   # assert
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = "single"
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
