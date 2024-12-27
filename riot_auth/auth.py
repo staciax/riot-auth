@@ -6,7 +6,7 @@ import json
 from base64 import urlsafe_b64decode
 from secrets import token_hex, token_urlsafe
 from typing import TYPE_CHECKING, Any
-from urllib.parse import parse_qsl, urldefrag, urlsplit
+from urllib.parse import parse_qsl, urlparse, urlsplit
 
 import aiohttp
 
@@ -98,26 +98,28 @@ class RiotAuth:
                     'referer': f'https://{token_hex(5)}.riotgames.com/',
                 },
                 allow_redirects=False,
-            ) as resp:
-                text = await resp.text()
+            ) as response:
+                if response.status != 303:
+                    raise RiotAuthenticationError(response, 'Cookies is expired.')
 
-                if resp.status != 303:
-                    raise RiotAuthenticationError('Cookies is expired.')
+                if 'location' not in response.headers:
+                    raise RiotAuthenticationError(response, 'Invalid Cookies.')
 
-                if resp.status == 429 and resp.headers.get('location', '').startswith('/auth-error?error=rate_limited'):
-                    # int(resp.headers.get('retry-after', 0))
-                    raise RiotRatelimitError('Rate limited.')
+                location_url = urlparse(response.headers['location'])
+                params = dict(parse_qsl(location_url.query))
 
-                if resp.status == 403 and resp.headers.get('x-frame-options') == 'SAMEORIGIN':
-                    raise RiotAuthenticationError('Cloudflare block.')
+                if response.status == 429 or params.get('error') == 'rate_limited':
+                    raise RiotRatelimitError(response, 'Rate limited.')
 
-                if resp.headers.get('location', '').startswith('/login'):
-                    raise RiotAuthenticationError('Invalid Cookies.')
+                if response.status == 403 and response.headers.get('x-frame-options') == 'SAMEORIGIN':
+                    raise RiotAuthenticationError(response, 'Cloudflare block.')
+
+                if location_url.path.startswith('/login'):
+                    raise RiotAuthenticationError(response, 'Invalid Cookies.')
 
                 self._cookie_jar = session.cookie_jar  # type: ignore[assignment]
 
-                fragment = urldefrag(text).fragment
-                data: dict[str, Any] = dict(parse_qsl(fragment))
+                data: dict[str, Any] = dict(parse_qsl(location_url.fragment))
 
                 self.__update(extract_jwt=True, **data)
 
