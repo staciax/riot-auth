@@ -28,7 +28,7 @@ class RiotAuthHTTPError(RiotAuthError):
         else:
             self.text = message or ''
 
-        fmt = '{0.status} {0.reason}'
+        fmt = '{0.status}'
         if len(self.text):
             fmt += ': {1}'
 
