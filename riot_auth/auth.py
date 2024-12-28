@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qsl, urlparse, urlsplit
 
 import aiohttp
+import yarl
 
 from .errors import RiotAuthenticationError, RiotRatelimitError
 
@@ -125,15 +126,14 @@ class RiotAuth:
 
                 await self.__fetch_entitlements_token(session=session)
 
-    async def re_redeem_cookies(self) -> bool:
+    async def re_redeem_cookies(self) -> None:
         """
         Reauthenticate using cookies.
-
-        Returns a ``bool`` indicating success or failure.
         """
-        try:
-            await self.redeem_cookies('')
-        except RiotAuthenticationError:  # because credentials are empty
-            return False
-        else:
-            return True
+        cookies = self._extract_auth_cookies()
+        await self.redeem_cookies(cookies)
+
+    def _extract_auth_cookies(self) -> str:
+        url = yarl.URL('https://auth.riotgames.com')
+        cookies = self._cookie_jar.filter_cookies(url)
+        return '; '.join(f'{cookie.key}={cookie.value}' for cookie in cookies.values())
