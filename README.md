@@ -1,5 +1,5 @@
 ## riot-auth
-riot-auth is a simple authentication with cookies. 
+A simple Python library for riot account authorization with cookies.
 this project forked from [python-riot-auth](https://github.com/floxay/python-riot-auth) by [floxay](https://github.com/floxay)
 
 ## Installation
