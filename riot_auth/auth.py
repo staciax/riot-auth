@@ -91,7 +91,14 @@ class RiotAuth:
 
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                'https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&scope=account%20openid&nonce=1',
+                'https://auth.riotgames.com/authorize',
+                params={
+                    'redirect_uri': 'https://playvalorant.com/opt_in',
+                    'client_id': 'play-valorant-web-prod',
+                    'response_type': 'token id_token',
+                    'scope': 'account openid',
+                    'nonce': '1',
+                },
                 headers={
                     'Accept-Language': 'en-US,en;q=0.5',
                     'user-agent': RiotAuth.RIOT_CLIENT_USER_AGENT,
