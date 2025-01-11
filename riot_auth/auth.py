@@ -6,7 +6,7 @@ import json
 from base64 import urlsafe_b64decode
 from secrets import token_hex, token_urlsafe
 from typing import TYPE_CHECKING, Any
-from urllib.parse import parse_qsl, urlparse, urlsplit
+from urllib.parse import parse_qsl, urlparse
 
 import aiohttp
 import yarl
@@ -54,14 +54,6 @@ class RiotAuth:
         decoded = urlsafe_b64decode(f'{payload}===')
         temp_dict: dict[str, Any] = json.loads(decoded)
         return [(attr, temp_dict.get(key)) for key, attr in key_attr_pairs]
-
-    def __set_tokens_from_uri(self, data: dict[str, Any]) -> None:
-        mode = data['response']['mode']
-        uri = data['response']['parameters']['uri']
-
-        result = getattr(urlsplit(uri), mode)
-        data = dict(parse_qsl(result))
-        self.__update(extract_jwt=True, **data)
 
     async def __fetch_entitlements_token(self, session: aiohttp.ClientSession) -> None:
         headers = {
